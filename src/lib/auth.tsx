@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { checkUsernameAvailable, signInWithIdentifier } from "@/lib/auth.functions";
+import { checkUsernameAvailable, createProfile, signInWithIdentifier } from "@/lib/auth.functions";
 
 export type AuthResult = { ok: boolean; message?: string };
 
