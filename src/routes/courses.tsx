@@ -101,7 +101,7 @@ const CATEGORIES: { name: string; courses: Course[] }[] = [
 
 function CoursesPage() {
   return (
-    <>
+    <RequireAuth>
       <PageHeader
         title="Explore Courses"
         subtitle="Each course is a quest line inside the VoxaLearn world. Open paths can be explored today; sealed paths await their rune."
@@ -122,6 +122,6 @@ function CoursesPage() {
           </section>
         ))}
       </div>
-    </>
+    </RequireAuth>
   );
 }
