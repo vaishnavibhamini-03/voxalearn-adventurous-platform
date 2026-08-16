@@ -55,3 +55,43 @@ export const signInWithIdentifier = createServerFn({ method: "POST" })
       refresh_token: result.session.refresh_token,
     };
   });
+
+/**
+ * Creates the profile row for a freshly registered user. Runs server-side because
+ * with email confirmation enabled there is no session yet, so RLS-based inserts
+ * from the browser would fail.
+ */
+export const createProfile = createServerFn({ method: "POST" })
+  .inputValidator((input: { userId: string; fullName: string; username: string; email: string }) => ({
+    userId: String(input.userId ?? ""),
+    fullName: String(input.fullName ?? "").trim(),
+    username: String(input.username ?? "").trim(),
+    email: String(input.email ?? "").trim().toLowerCase(),
+  }))
+  .handler(async ({ data }) => {
+    if (!/^[0-9a-f-]{36}$/i.test(data.userId)) return { ok: false as const, reason: "invalid" as const };
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(data.username)) return { ok: false as const, reason: "invalid" as const };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Only allow creating a profile for a real auth user with a matching email.
+    const { data: userRes, error: userErr } = await supabaseAdmin.auth.admin.getUserById(data.userId);
+    if (userErr || !userRes?.user || userRes.user.email?.toLowerCase() !== data.email) {
+      return { ok: false as const, reason: "invalid" as const };
+    }
+
+    const { data: taken } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("username", data.username)
+      .neq("id", data.userId)
+      .limit(1);
+    if ((taken?.length ?? 0) > 0) return { ok: false as const, reason: "username" as const };
+
+    const { error } = await supabaseAdmin.from("profiles").upsert(
+      { id: data.userId, full_name: data.fullName, username: data.username, email: data.email },
+      { onConflict: "id" },
+    );
+    if (error) return { ok: false as const, reason: "failed" as const };
+    return { ok: true as const };
+  });

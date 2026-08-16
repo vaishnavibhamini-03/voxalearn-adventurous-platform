@@ -45,6 +45,7 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const { register, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -92,6 +93,10 @@ function RegisterPage() {
       return;
     }
     setCreated(true);
+    if (result.message) {
+      setNotice(result.message);
+      return;
+    }
     void navigate({ to: "/courses", replace: true });
   }
 
@@ -109,7 +114,7 @@ function RegisterPage() {
         {formError ? <FormAlert tone="error" className="mb-5">{formError}</FormAlert> : null}
         {created ? (
           <FormAlert tone="success" className="mb-5">
-            Account created successfully. Taking you to your courses...
+            {notice ?? "Account created successfully. Taking you to your courses..."}
           </FormAlert>
         ) : null}
 

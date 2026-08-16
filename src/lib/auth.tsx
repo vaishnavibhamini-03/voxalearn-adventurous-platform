@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { checkUsernameAvailable, signInWithIdentifier } from "@/lib/auth.functions";
+import { checkUsernameAvailable, createProfile, signInWithIdentifier } from "@/lib/auth.functions";
 
 export type AuthResult = { ok: boolean; message?: string };
 
@@ -117,21 +117,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const newUser = data.user;
           if (!newUser) return { ok: false, message: GENERIC_REGISTER };
 
-          const { error: profileError } = await supabase.from("profiles").insert({
-            id: newUser.id,
-            full_name: fullName.trim(),
-            username: username.trim(),
-            email: email.trim().toLowerCase(),
+          const profile = await createProfile({
+            data: {
+              userId: newUser.id,
+              fullName: fullName.trim(),
+              username: username.trim(),
+              email: email.trim().toLowerCase(),
+            },
           });
 
-          if (profileError) {
-            if (profileError.code === "23505" || profileError.code === "23405") {
-              return { ok: false, message: "This username is already in use. Please choose another one." };
-            }
-            if (profileError.message.toLowerCase().includes("duplicate")) {
+          if (!profile.ok) {
+            if (profile.reason === "username") {
               return { ok: false, message: "This username is already in use. Please choose another one." };
             }
             return { ok: false, message: GENERIC_REGISTER };
+          }
+
+          if (!data.session) {
+            return {
+              ok: true,
+              message: "Account created. Check your email to confirm your address, then sign in.",
+            };
           }
 
           return { ok: true };

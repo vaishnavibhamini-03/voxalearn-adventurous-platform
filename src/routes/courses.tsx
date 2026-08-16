@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CourseCard, type Course } from "@/components/CourseCard";
 import { PageHeader } from "@/components/PageHeader";
+import { RequireAuth } from "@/components/RequireAuth";
 
 export const Route = createFileRoute("/courses")({
   head: () => ({
@@ -100,7 +101,7 @@ const CATEGORIES: { name: string; courses: Course[] }[] = [
 
 function CoursesPage() {
   return (
-    <>
+    <RequireAuth>
       <PageHeader
         title="Explore Courses"
         subtitle="Each course is a quest line inside the VoxaLearn world. Open paths can be explored today; sealed paths await their rune."
@@ -121,6 +122,6 @@ function CoursesPage() {
           </section>
         ))}
       </div>
-    </>
+    </RequireAuth>
   );
 }
