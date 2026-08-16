@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CourseCard, type Course } from "@/components/CourseCard";
 import { PageHeader } from "@/components/PageHeader";
+import { RequireAuth } from "@/components/RequireAuth";
 
 export const Route = createFileRoute("/courses")({
   head: () => ({
