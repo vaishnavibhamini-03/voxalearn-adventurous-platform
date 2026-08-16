@@ -45,6 +45,7 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const { register, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
