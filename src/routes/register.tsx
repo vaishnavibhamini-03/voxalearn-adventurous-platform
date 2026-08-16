@@ -114,7 +114,7 @@ function RegisterPage() {
         {formError ? <FormAlert tone="error" className="mb-5">{formError}</FormAlert> : null}
         {created ? (
           <FormAlert tone="success" className="mb-5">
-            Account created successfully. Taking you to your courses...
+            {notice ?? "Account created successfully. Taking you to your courses..."}
           </FormAlert>
         ) : null}
 
