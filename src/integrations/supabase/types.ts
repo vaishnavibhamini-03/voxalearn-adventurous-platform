@@ -14,39 +14,160 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          achievement_name: string
+          created_at: string
+          description: string | null
+          earned_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          achievement_name: string
+          created_at?: string
+          description?: string | null
+          earned_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          achievement_name?: string
+          created_at?: string
+          description?: string | null
+          earned_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           email: string
           full_name: string
           id: string
           updated_at: string
           username: string
+          xp: number
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           email: string
           full_name: string
           id: string
           updated_at?: string
           username: string
+          xp?: number
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           email?: string
           full_name?: string
           id?: string
           updated_at?: string
           username?: string
+          xp?: number
         }
         Relationships: []
+      }
+      rewards: {
+        Row: {
+          created_at: string
+          description: string | null
+          earned_at: string
+          id: string
+          reward_name: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          earned_at?: string
+          id?: string
+          reward_name: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          earned_at?: string
+          id?: string
+          reward_name?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rewards_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_progress: {
+        Row: {
+          created_at: string
+          id: string
+          levels_completed: number
+          overall_progress: number
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          levels_completed?: number
+          overall_progress?: number
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          levels_completed?: number
+          overall_progress?: number
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_progress_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          achievement_count: number
+          avatar_url: string
+          rank: number
+          user_id: string
+          username: string
+          xp: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
