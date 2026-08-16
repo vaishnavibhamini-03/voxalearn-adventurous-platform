@@ -92,6 +92,10 @@ function RegisterPage() {
       return;
     }
     setCreated(true);
+    if (result.message) {
+      setNotice(result.message);
+      return;
+    }
     void navigate({ to: "/courses", replace: true });
   }
 
