@@ -16,6 +16,7 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MyCoursesRouteImport } from './routes/my-courses'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -58,6 +59,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/my-courses': typeof MyCoursesRoute
   '/privacy': typeof PrivacyRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/my-courses': typeof MyCoursesRoute
   '/privacy': typeof PrivacyRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/my-courses': typeof MyCoursesRoute
   '/privacy': typeof PrivacyRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/features'
     | '/forgot-password'
+    | '/leaderboard'
     | '/login'
     | '/my-courses'
     | '/privacy'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/features'
     | '/forgot-password'
+    | '/leaderboard'
     | '/login'
     | '/my-courses'
     | '/privacy'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/features'
     | '/forgot-password'
+    | '/leaderboard'
     | '/login'
     | '/my-courses'
     | '/privacy'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FeaturesRoute: typeof FeaturesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
   MyCoursesRoute: typeof MyCoursesRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FeaturesRoute: FeaturesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
   MyCoursesRoute: MyCoursesRoute,
   PrivacyRoute: PrivacyRoute,
