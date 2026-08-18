@@ -254,3 +254,10 @@
     scroll-behavior: auto;
   }
 }
+
+@utility student-sky {
+  background-image:
+    radial-gradient(circle at 12% 8%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 45%),
+    radial-gradient(circle at 88% 0%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 40%);
+  background-repeat: no-repeat;
+}
