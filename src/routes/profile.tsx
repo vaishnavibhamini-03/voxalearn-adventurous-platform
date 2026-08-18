@@ -23,7 +23,7 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-type Errors = Partial<Record<"fullName" | "username", string>>;
+type Errors = { fullName?: string | undefined; username?: string | undefined };
 
 function ProfilePage() {
   const { user } = useAuth();

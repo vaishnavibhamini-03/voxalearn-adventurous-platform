@@ -31,7 +31,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      void navigate({ to: "/courses", replace: true });
+      void navigate({ to: "/dashboard", replace: true });
     }
   }, [authLoading, isAuthenticated, navigate]);
 
@@ -58,7 +58,7 @@ function LoginPage() {
       setFormError(result.message ?? "Unable to sign in. Please check your credentials and try again.");
       return;
     }
-    void navigate({ to: "/courses", replace: true });
+    void navigate({ to: "/dashboard", replace: true });
   }
 
   return (

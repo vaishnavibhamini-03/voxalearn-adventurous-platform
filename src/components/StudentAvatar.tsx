@@ -23,7 +23,7 @@ export function StudentAvatar({
   size = 48,
   className,
 }: {
-  avatarId?: string | null;
+  avatarId?: string | null | undefined;
   size?: number;
   className?: string;
 }) {

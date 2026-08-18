@@ -26,7 +26,7 @@ export function Hero() {
 
           <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10">
             <PixelLinkButton
-              to={isAuthenticated ? "/courses" : "/login"}
+              to={isAuthenticated ? "/dashboard" : "/login"}
               variant="gold"
               size="lg"
               className="w-full max-w-xs"

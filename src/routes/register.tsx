@@ -51,7 +51,7 @@ function RegisterPage() {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated && !loading) {
-      void navigate({ to: "/courses", replace: true });
+      void navigate({ to: "/dashboard", replace: true });
     }
   }, [authLoading, isAuthenticated, loading, navigate]);
 
@@ -97,7 +97,7 @@ function RegisterPage() {
       setNotice(result.message);
       return;
     }
-    void navigate({ to: "/courses", replace: true });
+    void navigate({ to: "/dashboard", replace: true });
   }
 
   return (
