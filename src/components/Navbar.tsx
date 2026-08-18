@@ -4,8 +4,10 @@ import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { pixelButtonClass } from "./PixelButton";
 import { useAuth } from "@/lib/auth";
+import { useStudentProfile } from "@/lib/student-data";
+import { StudentAvatar } from "./StudentAvatar";
 
-const NAV_LINKS = [
+const PUBLIC_LINKS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/courses", label: "Courses" },
@@ -13,13 +15,26 @@ const NAV_LINKS = [
   { to: "/contact", label: "Contact" },
 ] as const;
 
+const STUDENT_NAV_LINKS = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/my-courses", label: "My Courses" },
+  { to: "/leaderboard", label: "Leaderboard" },
+  { to: "/profile", label: "Profile" },
+  { to: "/settings", label: "Settings" },
+] as const;
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, loading, user, signOut } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const navigate = useNavigate();
+  const NAV_LINKS = isAuthenticated ? STUDENT_NAV_LINKS : PUBLIC_LINKS;
+
+  const { data: profile } = useStudentProfile();
+  const avatarId = profile?.avatar_url ?? null;
 
   const displayName =
+    profile?.username ??
     (user?.user_metadata?.["username"] as string | undefined) ??
     (user?.user_metadata?.["full_name"] as string | undefined) ??
     user?.email?.split("@")[0] ??
@@ -70,7 +85,7 @@ export function Navbar() {
           ) : isAuthenticated ? (
             <>
               <span className="inline-flex min-h-11 max-w-40 items-center gap-2 truncate px-2 text-sm font-medium text-foreground">
-                <UserRound className="size-4 shrink-0 text-accent" aria-hidden />
+                <StudentAvatar avatarId={avatarId} size={28} />
                 <span className="truncate">{displayName}</span>
               </span>
               <button
