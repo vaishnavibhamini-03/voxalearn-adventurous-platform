@@ -43,6 +43,9 @@ const GENERIC_REGISTER = "Unable to create your account. Please check your detai
 const GENERIC_RESET = "Unable to process the request. Please try again.";
 const OFFLINE = "Unable to connect right now. Please check your connection and try again.";
 
+/** sessionStorage key holding the identifier awaiting one-time email verification. */
+export const PENDING_IDENTIFIER_KEY = "voxalearn:pending-verification";
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function isOffline() {

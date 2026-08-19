@@ -8,16 +8,22 @@ import { useAuth } from "@/lib/auth";
  * sends unauthenticated visitors to /login.
  */
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, emailVerified, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (loading) return;
+    if (!isAuthenticated) {
       void navigate({ to: "/login", replace: true });
+      return;
     }
-  }, [loading, isAuthenticated, navigate]);
+    // Only accounts whose email is still unverified are held back.
+    if (!emailVerified) {
+      void navigate({ to: "/verify-email", replace: true });
+    }
+  }, [loading, isAuthenticated, emailVerified, navigate]);
 
-  if (loading || !isAuthenticated) {
+  if (loading || !isAuthenticated || !emailVerified) {
     return (
       <div
         role="status"
