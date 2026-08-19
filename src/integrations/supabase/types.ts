@@ -49,147 +49,6 @@ export type Database = {
           },
         ]
       }
-      course_modules: {
-        Row: {
-          course_id: string
-          created_at: string
-          description: string | null
-          id: string
-          is_final_assessment: boolean
-          module_number: number
-          title: string
-        }
-        Insert: {
-          course_id: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_final_assessment?: boolean
-          module_number: number
-          title: string
-        }
-        Update: {
-          course_id?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_final_assessment?: boolean
-          module_number?: number
-          title?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "course_modules_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      courses: {
-        Row: {
-          category: string
-          created_at: string
-          description: string | null
-          id: string
-          is_available: boolean
-          name: string
-          slug: string
-        }
-        Insert: {
-          category: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_available?: boolean
-          name: string
-          slug: string
-        }
-        Update: {
-          category?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_available?: boolean
-          name?: string
-          slug?: string
-        }
-        Relationships: []
-      }
-      module_levels: {
-        Row: {
-          created_at: string
-          id: string
-          is_available: boolean
-          level_name: string
-          level_order: number
-          module_id: string
-          purpose: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_available?: boolean
-          level_name: string
-          level_order: number
-          module_id: string
-          purpose?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_available?: boolean
-          level_name?: string
-          level_order?: number
-          module_id?: string
-          purpose?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "module_levels_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "course_modules"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      module_topics: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          module_id: string
-          topic_name: string
-          topic_order: number
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          module_id: string
-          topic_name: string
-          topic_order: number
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          module_id?: string
-          topic_name?: string
-          topic_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "module_topics_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "course_modules"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -197,7 +56,6 @@ export type Database = {
           email: string
           full_name: string
           id: string
-          selected_game_world: Database["public"]["Enums"]["game_world"] | null
           updated_at: string
           username: string
           xp: number
@@ -208,7 +66,6 @@ export type Database = {
           email: string
           full_name: string
           id: string
-          selected_game_world?: Database["public"]["Enums"]["game_world"] | null
           updated_at?: string
           username: string
           xp?: number
@@ -219,7 +76,6 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
-          selected_game_world?: Database["public"]["Enums"]["game_world"] | null
           updated_at?: string
           username?: string
           xp?: number
@@ -314,7 +170,7 @@ export type Database = {
       }
     }
     Enums: {
-      game_world: "fantasy" | "sci_fi" | "mystery" | "real_world"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -441,8 +297,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      game_world: ["fantasy", "sci_fi", "mystery", "real_world"],
-    },
+    Enums: {},
   },
 } as const
