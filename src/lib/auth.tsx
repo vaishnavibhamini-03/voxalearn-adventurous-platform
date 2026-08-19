@@ -1,9 +1,18 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { checkUsernameAvailable, createProfile, signInWithIdentifier } from "@/lib/auth.functions";
+import {
+  checkUsernameAvailable,
+  createProfile,
+  resendVerificationEmail,
+  signInWithIdentifier,
+} from "@/lib/auth.functions";
 
-export type AuthResult = { ok: boolean; message?: string };
+export type AuthResult = {
+  ok: boolean;
+  message?: string;
+  needsVerification?: boolean;
+};
 
 type RegisterInput = {
   fullName: string;
@@ -17,17 +26,22 @@ type AuthContextValue = {
   session: Session | null;
   loading: boolean;
   isAuthenticated: boolean;
+  /** True only when Supabase reports the account's email as confirmed. */
+  emailVerified: boolean;
   signIn: (identifier: string, password: string) => Promise<AuthResult>;
   register: (input: RegisterInput) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  resendVerification: (identifier: string) => Promise<AuthResult>;
   requestPasswordReset: (email: string) => Promise<AuthResult>;
   updatePassword: (password: string) => Promise<AuthResult>;
 };
 
-const GENERIC_SIGN_IN = "Unable to sign in. Please check your credentials and try again.";
+const BAD_CREDENTIALS = "Email/username or password is incorrect. Please try again.";
+const UNVERIFIED = "Please verify your email address before signing in.";
+const SERVICE = "Unable to sign in right now. Please try again later.";
 const GENERIC_REGISTER = "Unable to create your account. Please check your details and try again.";
 const GENERIC_RESET = "Unable to process the request. Please try again.";
-const OFFLINE = "You appear to be offline. Please check your connection and try again.";
+const OFFLINE = "Unable to connect right now. Please check your connection and try again.";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -61,25 +75,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(() => {
+    const user = session?.user ?? null;
+    const verified = Boolean(user?.email_confirmed_at ?? user?.confirmed_at);
+
     return {
-      user: session?.user ?? null,
+      user,
       session,
       loading,
-      isAuthenticated: Boolean(session?.user),
+      isAuthenticated: Boolean(user),
+      emailVerified: verified,
 
       async signIn(identifier, password) {
         if (isOffline()) return { ok: false, message: OFFLINE };
         try {
           const result = await signInWithIdentifier({ data: { identifier, password } });
-          if (!result.ok) return { ok: false, message: GENERIC_SIGN_IN };
+          if (!result.ok) {
+            if (result.reason === "unverified") {
+              return { ok: false, message: UNVERIFIED, needsVerification: true };
+            }
+            if (result.reason === "service") return { ok: false, message: SERVICE };
+            return { ok: false, message: BAD_CREDENTIALS };
+          }
           const { error } = await supabase.auth.setSession({
             access_token: result.access_token,
             refresh_token: result.refresh_token,
           });
-          if (error) return { ok: false, message: GENERIC_SIGN_IN };
+          if (error) return { ok: false, message: SERVICE };
           return { ok: true };
         } catch {
-          return { ok: false, message: GENERIC_SIGN_IN };
+          return { ok: false, message: SERVICE };
         }
       },
 
@@ -95,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email,
             password,
             options: {
-              emailRedirectTo: window.location.origin,
+              emailRedirectTo: `${window.location.origin}/dashboard`,
               data: { full_name: fullName, username },
             },
           });
@@ -136,7 +160,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (!data.session) {
             return {
               ok: true,
-              message: "Account created. Check your email to confirm your address, then sign in.",
+              needsVerification: true,
+              message: "Your account has been created. Please verify your email address to continue.",
             };
           }
 
@@ -153,6 +178,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           /* session is cleared locally regardless */
         }
         setSession(null);
+      },
+
+      async resendVerification(identifier) {
+        if (isOffline()) return { ok: false, message: OFFLINE };
+        try {
+          const result = await resendVerificationEmail({
+            data: { identifier, redirectTo: `${window.location.origin}/dashboard` },
+          });
+          if (!result.ok) {
+            if (result.reason === "rate") {
+              return {
+                ok: false,
+                message: "Please wait a moment before requesting another verification email.",
+              };
+            }
+            return { ok: false, message: "Unable to send the verification email. Please try again." };
+          }
+          if (result.status === "already_verified") {
+            return { ok: true, message: "Your email is already verified. Please log in to continue." };
+          }
+          return { ok: true, message: "Verification email sent. Please check your inbox." };
+        } catch {
+          return { ok: false, message: "Unable to send the verification email. Please try again." };
+        }
       },
 
       async requestPasswordReset(email) {
