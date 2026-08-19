@@ -99,7 +99,7 @@ export const resendVerificationEmail = createServerFn({ method: "POST" })
     const { error } = await client.auth.resend({
       type: "signup",
       email: profile.email,
-      options: data.redirectTo ? { emailRedirectTo: data.redirectTo } : undefined,
+      ...(data.redirectTo ? { options: { emailRedirectTo: data.redirectTo } } : {}),
     });
     if (error) {
       const raw = `${error.message ?? ""}`.toLowerCase();
