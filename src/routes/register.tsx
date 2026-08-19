@@ -5,7 +5,7 @@ import { FormInput } from "@/components/FormInput";
 import { PixelButton } from "@/components/PixelButton";
 import { FormAlert } from "@/components/FormAlert";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/lib/auth";
+import { useAuth, PENDING_IDENTIFIER_KEY } from "@/lib/auth";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -46,14 +46,13 @@ function RegisterPage() {
   const [created, setCreated] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const { register, isAuthenticated, loading: authLoading } = useAuth();
+  const { register, isAuthenticated, emailVerified, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated && !loading) {
-      void navigate({ to: "/dashboard", replace: true });
-    }
-  }, [authLoading, isAuthenticated, loading, navigate]);
+    if (authLoading || !isAuthenticated || loading) return;
+    void navigate({ to: emailVerified ? "/dashboard" : "/verify-email", replace: true });
+  }, [authLoading, isAuthenticated, emailVerified, loading, navigate]);
 
   const set = (key: Field) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
@@ -93,8 +92,10 @@ function RegisterPage() {
       return;
     }
     setCreated(true);
-    if (result.message) {
-      setNotice(result.message);
+    if (result.needsVerification) {
+      setNotice(result.message ?? null);
+      window.sessionStorage.setItem(PENDING_IDENTIFIER_KEY, values.email.trim());
+      void navigate({ to: "/verify-email", replace: true });
       return;
     }
     void navigate({ to: "/dashboard", replace: true });
@@ -114,7 +115,7 @@ function RegisterPage() {
         {formError ? <FormAlert tone="error" className="mb-5">{formError}</FormAlert> : null}
         {created ? (
           <FormAlert tone="success" className="mb-5">
-            {notice ?? "Account created successfully. Taking you to your courses..."}
+            {notice ?? "Account created. Please verify your email to continue."}
           </FormAlert>
         ) : null}
 

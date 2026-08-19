@@ -5,7 +5,7 @@ import { FormInput } from "@/components/FormInput";
 import { PixelButton } from "@/components/PixelButton";
 import { VoxaMascot } from "@/components/VoxaMascot";
 import { FormAlert } from "@/components/FormAlert";
-import { useAuth } from "@/lib/auth";
+import { useAuth, PENDING_IDENTIFIER_KEY } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -26,14 +26,13 @@ function LoginPage() {
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const { signIn, isAuthenticated, loading: authLoading } = useAuth();
+  const { signIn, isAuthenticated, emailVerified, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      void navigate({ to: "/dashboard", replace: true });
-    }
-  }, [authLoading, isAuthenticated, navigate]);
+    if (authLoading || !isAuthenticated) return;
+    void navigate({ to: emailVerified ? "/dashboard" : "/verify-email", replace: true });
+  }, [authLoading, isAuthenticated, emailVerified, navigate]);
 
   const set = (key: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues((v) => ({ ...v, [key]: e.target.value }));
@@ -55,9 +54,15 @@ function LoginPage() {
     const result = await signIn(values.identifier, values.password);
     setLoading(false);
     if (!result.ok) {
-      setFormError(result.message ?? "Unable to sign in. Please check your credentials and try again.");
+      if (result.needsVerification) {
+        window.sessionStorage.setItem(PENDING_IDENTIFIER_KEY, values.identifier.trim());
+        void navigate({ to: "/verify-email" });
+        return;
+      }
+      setFormError(result.message ?? "Unable to sign in right now. Please try again later.");
       return;
     }
+    window.sessionStorage.removeItem(PENDING_IDENTIFIER_KEY);
     void navigate({ to: "/dashboard", replace: true });
   }
 
