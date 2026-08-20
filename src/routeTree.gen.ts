@@ -25,7 +25,6 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as CoursePythonRouteImport } from './routes/course.python'
 
 const IndexRoute = IndexRouteImport.update({
@@ -108,11 +107,6 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VerifyEmailRoute = VerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CoursePythonRoute = CoursePythonRouteImport.update({
   id: '/course/python',
   path: '/course/python',
@@ -136,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/terms': typeof TermsRoute
-  '/verify-email': typeof VerifyEmailRoute
   '/course/python': typeof CoursePythonRoute
 }
 export interface FileRoutesByTo {
@@ -156,7 +149,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/terms': typeof TermsRoute
-  '/verify-email': typeof VerifyEmailRoute
   '/course/python': typeof CoursePythonRoute
 }
 export interface FileRoutesById {
@@ -177,7 +169,6 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/terms': typeof TermsRoute
-  '/verify-email': typeof VerifyEmailRoute
   '/course/python': typeof CoursePythonRoute
 }
 export interface FileRouteTypes {
@@ -199,7 +190,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/settings'
     | '/terms'
-    | '/verify-email'
     | '/course/python'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -219,7 +209,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/settings'
     | '/terms'
-    | '/verify-email'
     | '/course/python'
   id:
     | '__root__'
@@ -239,7 +228,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/settings'
     | '/terms'
-    | '/verify-email'
     | '/course/python'
   fileRoutesById: FileRoutesById
 }
@@ -260,7 +248,6 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
   TermsRoute: typeof TermsRoute
-  VerifyEmailRoute: typeof VerifyEmailRoute
   CoursePythonRoute: typeof CoursePythonRoute
 }
 
@@ -378,13 +365,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/verify-email': {
-      id: '/verify-email'
-      path: '/verify-email'
-      fullPath: '/verify-email'
-      preLoaderRoute: typeof VerifyEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/course/python': {
       id: '/course/python'
       path: '/course/python'
@@ -412,7 +392,6 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
   TermsRoute: TermsRoute,
-  VerifyEmailRoute: VerifyEmailRoute,
   CoursePythonRoute: CoursePythonRoute,
 }
 export const routeTree = rootRouteImport
