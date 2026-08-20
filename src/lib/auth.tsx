@@ -67,23 +67,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => {
     const user = session?.user ?? null;
-    const verified = Boolean(user?.email_confirmed_at ?? user?.confirmed_at);
 
     return {
       user,
       session,
       loading,
       isAuthenticated: Boolean(user),
-      emailVerified: verified,
 
       async signIn(identifier, password) {
         if (isOffline()) return { ok: false, message: OFFLINE };
         try {
           const result = await signInWithIdentifier({ data: { identifier, password } });
           if (!result.ok) {
-            if (result.reason === "unverified") {
-              return { ok: false, message: UNVERIFIED, needsVerification: true };
-            }
             if (result.reason === "service") return { ok: false, message: SERVICE };
             return { ok: false, message: BAD_CREDENTIALS };
           }
@@ -97,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { ok: false, message: SERVICE };
         }
       },
+
 
       async register({ fullName, email, username, password }) {
         if (isOffline()) return { ok: false, message: OFFLINE };
