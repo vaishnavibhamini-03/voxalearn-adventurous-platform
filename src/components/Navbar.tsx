@@ -44,9 +44,9 @@ export function Navbar() {
     if (signingOut) return;
     setSigningOut(true);
     setOpen(false);
+    await navigate({ to: "/", replace: true });
     await signOut();
     setSigningOut(false);
-    void navigate({ to: "/", replace: true });
   }
 
   return (
