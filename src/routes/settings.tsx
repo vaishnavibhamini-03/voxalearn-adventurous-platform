@@ -41,8 +41,9 @@ function SettingsPage() {
     setSigningOut(true);
     await queryClient.cancelQueries();
     queryClient.clear();
+    // Leave the protected area first so the auth gate cannot bounce to /login.
+    await navigate({ to: "/", replace: true });
     await signOut();
-    void navigate({ to: "/", replace: true });
   }
 
   return (
